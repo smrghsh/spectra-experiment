@@ -2,63 +2,57 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
-import cloudVertexShader from './shaders/cloud/vertex.glsl'
-import cloudFragmentShader from './shaders/cloud/fragment.glsl'
-import oceanVertexShader from './shaders/ocean/vertex.glsl'
-import oceanFragmentShader from './shaders/ocean/fragment.glsl'
-import moonVertexShader from './shaders/moon/vertex.glsl'
-import moonFragmentShader from './shaders/moon/fragment.glsl'
-// import CCapture from 'ccapture.js'
-
-import { SubtractiveBlending } from 'three'
-
-
-// var capturer = new CCapture( { format: 'jpg' } );
-
-// make sure to set aspect before doing this
-var capturer = new CCapture( { format: 'webm' } );
-/**
- * Base
- */
+import { Scene } from 'three'
+import desertGroundVertexShader from './shaders/desertGround/vertex.glsl'
+import desertGroundFragmentShader from './shaders/desertGround/fragment.glsl'
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+// /**
+//  * Base
+//  */
+// // Debug
+const gui = new dat.GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-scene.add(new THREE.AxesHelper())
 
+const light = new THREE.AmbientLight( 0xFFFFFF );
+scene.add(light)
+
+//Terrain (two meshes)
+
+var audioFiles = [0,0,0]
+
+function placeSpectrograms(audioFiles){
+    
+}
+
+const geometry = new THREE.PlaneGeometry( 1, 1 );
+const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+const plane = new THREE.Mesh( geometry, material );
+plane.rotation.y += Math.PI/2
+scene.add( plane );
+
+scene.add(new THREE.AxesHelper())
 
 /**
  * Sizes
  */
 const sizes = {
-    width: 1080,
-    height: 1080
+    width: window.innerWidth,
+    height: window.innerHeight
 }
-
-// window.addEventListener('resize', () =>
-// {
-//     // Update sizes
-//     sizes.width = window.innerWidth
-//     sizes.height = window.innerHeight
-
-//     // Update camera
-//     camera.aspect = sizes.width / sizes.height
-//     camera.updateProjectionMatrix()
-
-//     // Update renderer
-//     renderer.setSize(sizes.width, sizes.height)
-//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-// })
-
 /**
  * Camera
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(-1, 1, 2)
-camera.lookAt(0.5,0.5,0)
+camera.position.x = -5
+camera.position.y = 3.0
+camera.lookAt(0,0,0)
+// camera.position.x = 3
 scene.add(camera)
 
 // Controls
@@ -73,27 +67,32 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.xr.enabled = true;
+document.body.appendChild( VRButton.createButton( renderer ) );
+
 
 /**
  * Animate
  */
 const clock = new THREE.Clock()
+let delta = 0;
 
-var captureFlag = true;
-
-capturer.start();
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
-
-
     // Update controls
     controls.update()
-    // Render
-    renderer.render(scene, camera)
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
-    capturer.capture( canvas )
+    delta += clock.getDelta();
 }
 
 tick()
+
+
+
+renderer.setAnimationLoop( function () {
+    tick()
+	renderer.render( scene, camera );
+
+} );
+
+

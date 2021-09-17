@@ -17,6 +17,7 @@ void main() {
     vec4 projectedPosition = projectionMatrix * viewPosition;
     vUv = uv;
     gl_Position = projectedPosition;
+    // gl_Position = vec4(position,1.0);
 
     //varying
     // vFog = distance(vec2(0.0,0.0),modelPosition.xz);
