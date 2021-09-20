@@ -3,8 +3,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import { Scene } from 'three'
-import desertGroundVertexShader from './shaders/desertGround/vertex.glsl'
-import desertGroundFragmentShader from './shaders/desertGround/fragment.glsl'
+import horizontalGridVertexShader from './shaders/horizontalGrid/vertex.glsl'
+import horizontalGridFragmentShader from './shaders/horizontalGrid/fragment.glsl'
+
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 // /**
 //  * Base
@@ -17,6 +18,10 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+scene.background = new THREE.Color('white')
+// scene.fog = new THREE.Fog('white',1,1000);
+
+
 
 const light = new THREE.AmbientLight( 0xFFFFFF );
 scene.add(light)
@@ -29,13 +34,25 @@ function placeSpectrograms(audioFiles){
     
 }
 
-const geometry = new THREE.PlaneGeometry( 1, 1 );
+const geometry = new THREE.PlaneGeometry( 100, 100 );
 const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-const plane = new THREE.Mesh( geometry, material );
-plane.rotation.y += Math.PI/2
+const horizontalGridMaterial = new THREE.ShaderMaterial({
+    vertexShader: horizontalGridVertexShader,
+    fragmentShader: horizontalGridFragmentShader,
+    transparent: true,
+})
+
+
+const plane = new THREE.Mesh( geometry, horizontalGridMaterial );
+// plane.rotation.y += Math.PI/2
+plane.rotation.x -= Math.PI/2
 scene.add( plane );
 
 scene.add(new THREE.AxesHelper())
+
+
+
+
 
 /**
  * Sizes
