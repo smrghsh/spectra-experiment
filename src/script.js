@@ -6,6 +6,9 @@ import { Scene } from 'three'
 
 import horizontalGridVertexShader from './shaders/horizontalGrid/vertex.glsl'
 import horizontalGridFragmentShader from './shaders/horizontalGrid/fragment.glsl'
+import testVertexShader from './shaders/test/vertex.glsl'
+import testFragmentShader from './shaders/test/fragment.glsl'
+
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 // /**
 //  * Base
@@ -40,8 +43,9 @@ function placeSpectrograms(audioFiles){
 // scene.add(cube)
 
 
+
+
 const geometry = new THREE.PlaneGeometry( 100, 100 );
-const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
 const horizontalGridMaterial = new THREE.ShaderMaterial({
     vertexShader: horizontalGridVertexShader,
     fragmentShader: horizontalGridFragmentShader,
@@ -49,10 +53,26 @@ const horizontalGridMaterial = new THREE.ShaderMaterial({
 })
 
 
-const plane = new THREE.Mesh( geometry, horizontalGridMaterial );
+const floorPlane = new THREE.Mesh( geometry, horizontalGridMaterial );
 // plane.rotation.y += Math.PI/2
-plane.rotation.x -= Math.PI/2
-scene.add( plane );
+floorPlane.rotation.x -= Math.PI/2
+scene.add( floorPlane );
+
+
+const planeGeometry = new THREE.PlaneGeometry(1,1)
+// const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+const material = new THREE.ShaderMaterial({
+    vertexShader: testVertexShader,
+    fragmentShader: testFragmentShader,
+    transparent: true,
+    uniforms: {
+        uTime: {value: 0.0}
+    },
+    side: THREE.DoubleSide
+})
+const plane = new THREE.Mesh(planeGeometry,material)
+scene.add(plane)
+
 
 scene.add(new THREE.AxesHelper())
 
@@ -106,6 +126,7 @@ const tick = () =>
     // Update controls
     controls.update()
     delta += clock.getDelta();
+    material.uniforms.uTime.value = elapsedTime;
 }
 
 tick()
