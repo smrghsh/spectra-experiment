@@ -3,9 +3,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import { Scene } from 'three'
+
 import horizontalGridVertexShader from './shaders/horizontalGrid/vertex.glsl'
 import horizontalGridFragmentShader from './shaders/horizontalGrid/fragment.glsl'
-
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 // /**
 //  * Base
@@ -33,6 +33,12 @@ var audioFiles = [0,0,0]
 function placeSpectrograms(audioFiles){
     
 }
+//example cube
+// const cubeGeometry = new THREE.BoxGeometry(1,1,1);
+// const cubeMaterial = new THREE.MeshBasicMaterial({color: 'red'});
+// const cube = new THREE.Mesh(cubeGeometry,cubeMaterial)
+// scene.add(cube)
+
 
 const geometry = new THREE.PlaneGeometry( 100, 100 );
 const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
