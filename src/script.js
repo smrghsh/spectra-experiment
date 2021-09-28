@@ -21,7 +21,7 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('white')
+scene.background = new THREE.Color('rebeccapurple')
 // scene.fog = new THREE.Fog('white',1,1000);
 
 
@@ -31,18 +31,25 @@ scene.add(light)
 
 //Terrain (two meshes)
 
-var audioFiles = [0,0,0]
+// var audioFiles = [0,0,0]
 
-function placeSpectrograms(audioFiles){
+// function placeSpectrograms(audioFiles){
     
-}
+// }
 //example cube
-// const cubeGeometry = new THREE.BoxGeometry(1,1,1);
-// const cubeMaterial = new THREE.MeshBasicMaterial({color: 'red'});
-// const cube = new THREE.Mesh(cubeGeometry,cubeMaterial)
-// scene.add(cube)
+const cubeGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
 
+const cubeMaterial = new THREE.MeshBasicMaterial({color: 'red'});
+const cube = new THREE.Mesh(cubeGeometry,cubeMaterial)
+scene.add(cube)
+cube.rotation.x += Math.PI /4;
 
+const sphereGeometry = new THREE.SphereGeometry( 1, 32, 16 );
+const sphereMaterial = new THREE.MeshBasicMaterial( { color: 'cyan' } );
+const sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+scene.add( sphere );
+
+// sphere.position.x += 10
 
 
 const geometry = new THREE.PlaneGeometry( 100, 100 );
@@ -59,24 +66,14 @@ floorPlane.rotation.x -= Math.PI/2
 scene.add( floorPlane );
 
 
-const planeGeometry = new THREE.PlaneGeometry(1,1)
-// const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-const material = new THREE.ShaderMaterial({
-    vertexShader: testVertexShader,
-    fragmentShader: testFragmentShader,
-    transparent: true,
-    uniforms: {
-        uTime: {value: 0.0}
-    },
-    side: THREE.DoubleSide
-})
-const plane = new THREE.Mesh(planeGeometry,material)
-scene.add(plane)
-
 
 scene.add(new THREE.AxesHelper())
 
+const torusKnotGeometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
+const TKMaterial = new THREE.MeshBasicMaterial({color: 'orange',wireframe: true})
+const torusKnot = new THREE.Mesh(torusKnotGeometry,TKMaterial)
 
+scene.add(torusKnot)
 
 
 
@@ -126,7 +123,9 @@ const tick = () =>
     // Update controls
     controls.update()
     delta += clock.getDelta();
-    material.uniforms.uTime.value = elapsedTime;
+    sphere.position.y = 10 * Math.sin(elapsedTime);
+    sphere.position.x = 10 * Math.cos(elapsedTime);
+    // material.uniforms.uTime.value = elapsedTime;
 }
 
 tick()
