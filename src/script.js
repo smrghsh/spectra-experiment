@@ -6,8 +6,6 @@ import { Scene } from 'three'
 
 import horizontalGridVertexShader from './shaders/horizontalGrid/vertex.glsl'
 import horizontalGridFragmentShader from './shaders/horizontalGrid/fragment.glsl'
-import testVertexShader from './shaders/test/vertex.glsl'
-import testFragmentShader from './shaders/test/fragment.glsl'
 
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 
@@ -18,25 +16,19 @@ const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('rebeccapurple');
+scene.background = new THREE.Color('white');
 // Light
 const light = new THREE.AmbientLight( 0xFFFFFF );
 scene.add(light);
 
-// Spectogram
-const planeGeometry = new THREE.PlaneGeometry(100, 50);
-const planeMaterial = new THREE.MeshBasicMaterial({color: 'red'}); //this
-const plane = new THREE.Mesh(planeGeometry,planeMaterial);
-scene.add(plane);
-
 // Ground
-const floorPlane = new THREE.PlaneGeometry( 100, 100 );
+const floorPlaneGeometry = new THREE.PlaneGeometry( 100, 100 );
 const floorPlaneMaterial = new THREE.ShaderMaterial({
     vertexShader: horizontalGridVertexShader,
     fragmentShader: horizontalGridFragmentShader,
     transparent: true,
 });
-const floorPlane = new THREE.Mesh(floorPlane, floorPlaneMaterial);
+const floorPlane = new THREE.Mesh(floorPlaneGeometry, floorPlaneMaterial);
 scene.add(floorPlane);
 
 //help
