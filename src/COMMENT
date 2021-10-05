@@ -1,0 +1,45 @@
+// Spectogram Visualizer
+const vertices = new Float32Array( [
+	-1.0, -1.0,  1.0,
+	 1.0, -1.0,  1.0,
+	 1.0,  1.0,  1.0,
+
+	 1.0,  1.0,  1.0,
+	-1.0,  1.0,  1.0,
+	-1.0, -1.0,  1.0
+] );
+
+const pointsGeometry = new THREE.BufferGeometry();
+pointsGeometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+var pointsMaterial = new THREE.Points(
+    pointsGeometry,
+    new THREE.PointsMaterial({
+        color: 0x00afaf,
+        size: 0.1,
+        fog: true
+    })
+);
+pointsMaterial.translateY(1.01);
+// let pointsMaterial = new THREE.ShaderMaterial({
+//     vertexShader: pointsVertexShader,
+//     fragmentShader: pointsFragmentShader,
+//     transparent: true,
+//     fog: true,
+// });
+scene.add(pointsMaterial);
+
+// Audio
+const listener = new THREE.AudioListener();
+camera.add( listener );
+
+// // create a global audio source
+const song = new THREE.Audio( listener );
+const songElement = document.getElementById( 'song' );
+song.setMediaElementSource( songElement );
+//songElement.play();
+
+index.html - 
+//this loads the song
+    <audio id="song" preload="auto" style="display: none">
+        <source src="Audio/clouds.wav" type="audio/wav">
+    </audio>
