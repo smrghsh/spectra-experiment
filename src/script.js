@@ -21,7 +21,9 @@ const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('rebeccapurple');
+scene.background = new THREE.Color('white');
+
+scene.add(new THREE.AxesHelper())
 
 //light
 const light = new THREE.AmbientLight( 0xFFFFFF );
@@ -116,14 +118,16 @@ var uniforms = {
 let spectraMaterial = new THREE.ShaderMaterial( {
     uniforms: uniforms,
     vertexShader:   spectraVertexShader,
-    fragmentShader: spectraFragmentShader
+    fragmentShader: spectraFragmentShader,
+    side: THREE.DoubleSide,
+    transparent: true
 } );
 
 //let spectraMaterial = new THREE.MeshBasicMaterial({color:"#433F81"});
 spectraMesh = new THREE.Mesh( spectraGeometry, spectraMaterial );
 spectraMesh.geometry.computeFaceNormals();
 spectraMesh.geometry.computeVertexNormals();
-
+spectraMesh.position.z -= 5;
 scene.add(spectraMesh);
 
 let ACTX = new AudioContext();
