@@ -22,60 +22,90 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('rebeccapurple')
-// scene.fog = new THREE.Fog('white',1,1000);
 
-
-
+//light
 const light = new THREE.AmbientLight( 0xFFFFFF );
 scene.add(light)
 
-//Terrain (two meshes)
-
-// var audioFiles = [0,0,0]
-
-// function placeSpectrograms(audioFiles){
-    
-// }
-//example cube
-const cubeGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
-
-const cubeMaterial = new THREE.MeshBasicMaterial({color: 'red'});
-const cube = new THREE.Mesh(cubeGeometry,cubeMaterial)
-scene.add(cube)
-cube.rotation.x += Math.PI /4;
-
-const sphereGeometry = new THREE.SphereGeometry( 1, 32, 16 );
-const sphereMaterial = new THREE.MeshBasicMaterial( { color: 'cyan' } );
-const sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
-scene.add( sphere );
-
-// sphere.position.x += 10
-
-
+//grid floorplane
 const geometry = new THREE.PlaneGeometry( 100, 100 );
 const horizontalGridMaterial = new THREE.ShaderMaterial({
     vertexShader: horizontalGridVertexShader,
     fragmentShader: horizontalGridFragmentShader,
     transparent: true,
 })
-
-
 const floorPlane = new THREE.Mesh( geometry, horizontalGridMaterial );
-// plane.rotation.y += Math.PI/2
 floorPlane.rotation.x -= Math.PI/2
 scene.add( floorPlane );
 
 
 
+
+// Initialize Scene parameters
+let frequency_samples = 512; // Y resolution
+let DATA = new Uint8Array(frequency_samples); // for later
+let heights, spectraMesh;
+let time_samples = 1200; // X resolution
+let n_vertices = (frequency_samples+1) * (time_samples+1);
+let xsegments = time_samples;
+let ysegments = frequency_samples;
+let xsize = 35; 
+let ysize = 20;
+let xhalfSize = xsize/2;
+let yhalfSize = ysize / 2;
+let xsegmentSize = xsize / xsegments; //Size of one square
+let ysegmentSize = ysize / ysegments;
+
+
+
+
+
+
+
+
+
+
+//audio stuffs
+const spectraGeometry = new THREE.BufferGeometry();
+let indices = [];
+heights = [];
+let vertices = [];
+// generate vertices for a simple grid geometry
+for (let i = 0; i <= xsegments; i ++ ) {
+    let x = ( i * xsegmentSize ) - xhalfSize; //midpoint of mesh is 0,0
+    for ( let j = 0; j <= ysegments; j ++ ) {
+        let y = (j * ysegmentSize) - yhalfSize;
+        vertices.push( x, y, 0);
+        heights.push(0); // for now our mesh is flat, so heights are zero
+    }
+}
+// Add the position data to the geometry buffer
+spectraGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+for (let i = 0; i < xsegments; i ++ ) {
+    for ( let j = 0; j < ysegments; j ++ ) {
+        let a = i * ( ysegments + 1 ) + ( j + 1 );
+        let b = i * ( ysegments + 1 ) + j;
+        let c = ( i + 1 ) * ( ysegments + 1 ) + j;
+        let d = ( i + 1 ) * ( ysegments + 1 ) + ( j + 1 );
+        // generate two faces (triangles) per iteration
+        indices.push( a, b, d ); // face one
+        indices.push( b, c, d ); // face two
+    }
+}
+spectraGeometry.setIndex( indices );
+
+let spectraMaterial = new THREE.MeshBasicMaterial({color:"#433F81"});
+spectraMesh = new THREE.Mesh( spectraGeometry, spectraMaterial );
+scene.add(spectraMesh);
+
+
+
+
+
+
+//axis
 scene.add(new THREE.AxesHelper())
-
-const torusKnotGeometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
-const TKMaterial = new THREE.MeshBasicMaterial({color: 'orange',wireframe: true})
-const torusKnot = new THREE.Mesh(torusKnotGeometry,TKMaterial)
-
-scene.add(torusKnot)
-
-
 
 /**
  * Sizes
@@ -123,8 +153,6 @@ const tick = () =>
     // Update controls
     controls.update()
     delta += clock.getDelta();
-    sphere.position.y = 10 * Math.sin(elapsedTime);
-    sphere.position.x = 10 * Math.cos(elapsedTime);
     // material.uniforms.uTime.value = elapsedTime;
 }
 
