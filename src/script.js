@@ -62,13 +62,25 @@ let indices = [];
 heights = [];
 let vertices = [];
 // generate vertices for a simple grid geometry
+// for (let i = 0; i <= xsegments; i ++ ) {
+//     let x = ( i * xsegmentSize ) - xhalfSize; //midpoint of mesh is 0,0
+//     for ( let j = 0; j <= ysegments; j ++ ) {
+//         let y = (j * ysegmentSize) - yhalfSize;
+//         vertices.push( x, y, 0);
+//         heights.push(0); // make them flat again
+//     }
+// }
+let ypow_max = Math.log(ysize);
+let ybase = Math.E;
+// generate vertices and color data for a simple grid geometry
 for (let i = 0; i <= xsegments; i ++ ) {
-    let x = ( i * xsegmentSize ) - xhalfSize; //midpoint of mesh is 0,0
-    for ( let j = 0; j <= ysegments; j ++ ) {
-        let y = (j * ysegmentSize) - yhalfSize;
-        vertices.push( x, y, 0);
-        heights.push(0); // make them flat again
-    }
+        let x = ( i * xsegmentSize ) - xhalfSize;
+        for ( let j = 0; j <= ysegments; j ++ ) {
+	        let powr = (ysegments-j)/ysegments*ypow_max;
+               let y = -Math.pow(ybase, powr) + yhalfSize + 1;
+	        vertices.push( x, y, 0);
+	        heights.push(0);
+	}
 }
 heights = new Uint8Array(heights);
 
@@ -116,24 +128,15 @@ scene.add(spectraMesh);
 
 let ACTX = new AudioContext();
 var ANALYSER = ACTX.createAnalyser();
-
-//click stuff
-let first_click = true;
-document.addEventListener("click", function(){
-    if (first_click) {
-        first_click  = false;
-        console.log("logged");
-        ANALYSER.fftSize = 4*frequency_samples;  
-        ANALYSER.smoothingTimeConstant = 0.5; 
-        let SOURCE;
-        navigator.mediaDevices.getUserMedia({ audio: {echoCancellation:false} }).then(process_audio);
-
-        function process_audio (stream) {
-            SOURCE = ACTX.createMediaStreamSource(stream);
-            SOURCE.connect(ANALYSER);
-        }
-    }
-});
+// first_click  = false;
+ANALYSER.fftSize = 4*frequency_samples;  
+ANALYSER.smoothingTimeConstant = 0.5; 
+let SOURCE;
+navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then(process_audio);
+function process_audio (stream) {
+    SOURCE = ACTX.createMediaStreamSource(stream);
+    SOURCE.connect(ANALYSER);
+}
 
 //axis
 // scene.add(new THREE.AxesHelper())
