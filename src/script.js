@@ -45,7 +45,7 @@ scene.add( floorPlane );
 let frequency_samples = 512; // Y resolution
 let DATA = new Uint8Array(frequency_samples); // for later
 let heights, spectraMesh;
-let time_samples = 1200; // X resolution
+let time_samples = 600; // X resolution
 let n_vertices = (frequency_samples+1) * (time_samples+1);
 let xsegments = time_samples;
 let ysegments = frequency_samples;
@@ -153,8 +153,9 @@ const sizes = {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.x = -5;
+camera.position.x = -5.0;
 camera.position.y = 3.0;
+camera.position.z = 3.0
 camera.lookAt(0,0,0);
 // camera.position.x = 3
 scene.add(camera);
