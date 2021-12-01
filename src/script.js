@@ -30,14 +30,17 @@ const light = new THREE.AmbientLight( 0xFFFFFF );
 scene.add(light);
 
 //grid floorplane
-const geometry = new THREE.PlaneGeometry( 100, 100 );
+const geometry = new THREE.SphereGeometry(60);
 const horizontalGridMaterial = new THREE.ShaderMaterial({
     vertexShader: horizontalGridVertexShader,
     fragmentShader: horizontalGridFragmentShader,
-    transparent: true,
+    uniforms: {
+        uTime: {value: 0.0},
+    },
+    transparent: false,
+    side: THREE.DoubleSide,
 });
 const floorPlane = new THREE.Mesh( geometry, horizontalGridMaterial );
-floorPlane.rotation.x -= Math.PI/2;
 scene.add( floorPlane );
 
 
@@ -112,7 +115,8 @@ for (let n=0;n<256;n++) {
 } 
 // Define the uniforms. V3V gives us a 3vector for RGB color in out LUT
 var uniforms = {
-    vLut: {type: "v3v", value: lut}
+    vLut: {type: "v3v", value: lut},
+    uTime: {value: 0.0}
 };
 // Bind the shaders and uniforms to the material
 let spectraMaterial = new THREE.ShaderMaterial( {
@@ -122,6 +126,7 @@ let spectraMaterial = new THREE.ShaderMaterial( {
     side: THREE.DoubleSide,
     transparent: true
 } );
+spectraMaterial.needsUpdate = true;
 
 //let spectraMaterial = new THREE.MeshBasicMaterial({color:"#433F81"});
 spectraMesh = new THREE.Mesh( spectraGeometry, spectraMaterial );
@@ -192,7 +197,8 @@ const tick = () =>
     // Update controls
     controls.update();
     delta += clock.getDelta();
-    // material.uniforms.uTime.value = elapsedTime;
+    spectraMaterial.uniforms.uTime.value = elapsedTime;
+    horizontalGridMaterial.uniforms.uTime.value = elapsedTime;
     ANALYSER.getByteFrequencyData(DATA);
     let start_val = frequency_samples+1;
 	let end_val = n_vertices -start_val;
