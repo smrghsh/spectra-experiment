@@ -79,26 +79,19 @@ float snoise(vec4 v) {
                + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;
 }
 
-vec4 mouseFX(vec4 color1, vec4 color2, vec4 color3) {
-  // float xDist = abs(mouseX*uResX - (0.5*gl_FragCoord.x));
-  // float yDist = abs(mouseY*uResY - (0.5*gl_FragCoord.y));
-  // float norm = step(50.0, sqrt(xDist*xDist + yDist*yDist));
-  // vec4 color = color1*0.25 + color2*0.15 + color3*0.25;
-  // color = color + color3*(1.0 - norm)*0.35 + color1*norm*0.35;
-  // return color;
-  return color1*0.45 + color2*0.05 + color3*0.50;
-  // return color3;
-}
-
 void main()
 {
   float nTime = uTime * 0.5;
-  float V = snoise(vec4(vPosition * scale * 0.2, cos(0.5*nTime)));
-  float V1 = snoise(1.2+(cos(0.25*nTime))*0.25* vec4(vPosition * scale * 20.0, sin(0.5*nTime)));
+  float V = snoise(vec4(vPosition * scale * 0.2, cos(0.01*nTime)));
+  float V1 = snoise(1.2+(cos(0.25*nTime))*0.25* vec4(vPosition * scale * 20.0, sin(nTime)));
   float V2 = snoise(sin(0.5*nTime)*0.77*vec4(vec3(V1), 1.0));
   float V3 = snoise(sin(0.5*nTime)*20.*vec4(vec3(V2), 1.0));
-  vec4 color1 = vec4(V2, V3, V2, 1.0);
-  vec4 color2 = vec4(V3, V2, V3, 1.0);
-  vec4 color = color2*0.7 + color1*0.3;
-  gl_FragColor = vec4(min(max(color.x, 0.2)+0.6, 1.0), min(max(color.y, 0.2)+0.6, 1.0), min(max(color.z, 0.2)+0.6, 1.0), 1.0);
+  float V4 = snoise(sin(0.5*nTime)*2.2*vec4(vec3(V3), 1.0));
+  float V5 = snoise(sin(0.5*nTime)*0.2*vec4(vec3(V4), 1.0));
+  vec4 color1 = vec4(V2, V5, V4, 1.0);
+  vec4 color2 = vec4(V4, V2, V3, 1.0);
+  vec4 color3 = vec4(V5, V3, V5, 1.0);
+  vec4 color4 = vec4(V, V, V, 1.0);
+  vec4 color = color2*0.25 + color1*0.25 + color3*0.25 + color4*0.25;
+  gl_FragColor = color;
 }
