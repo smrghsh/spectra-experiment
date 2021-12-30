@@ -82,14 +82,21 @@ float snoise(vec4 v) {
 void main()
 {
   float nTime = uTime * 0.5;
-  float V1 = snoise(1.2+(cos(0.25*nTime))*0.25* vec4(vPosition * scale * 20.0, sin(nTime)));
-  float V2 = snoise(sin(0.5*nTime)*0.77*vec4(vec3(V1), 1.0));
-  float V3 = snoise(sin(0.5*nTime)*20.*vec4(vec3(V2), 1.0));
-  float V4 = snoise(sin(0.5*nTime)*2.2*vec4(vec3(V3), 1.0));
-  float V5 = snoise(sin(0.5*nTime)*0.2*vec4(vec3(V4), 1.0));
+  float V1 = snoise(1.2+(cos(0.25*nTime))*0.05* vec4(vPosition * scale * 20.0, sin(nTime)));
+  float V2 = snoise(sin(0.05*nTime)*0.77*vec4(vec3(V1*round(V1)), 1.0));
+  float V3 = snoise(sin(0.1*nTime)*20.*vec4(vec3(V2), 1.0));
+  float V4 = snoise(sin(0.5*nTime)*2.2*vec4(V3, V2, V2, V3));
+  V4 = max(0.1, min(1.0, (V4*V4)*0.1+0.3));
+  float V5 = snoise(vec4(V4, V3, V2, V1));
+  float r = snoise(vec4(V5, V5, V5, sin(0.99*nTime)));
+  float g = snoise(vec4(V5, V5, V5, sin(nTime)));
+  float b = snoise(vec4(V5, V5, V5, sin(1.01*nTime)));
   vec4 color1 = vec4(V1, V1, V1, 1.0);
-  vec4 color2 = vec4(V4, V2, V3, 1.0);
-  vec4 color3 = vec4(V5, V5, V5, 1.0);
+  vec4 color2 = vec4(V3, V3, V3, 1.0);
+  vec4 color3 = vec4(V4, V4, V4, 1.0);
+  vec4 color4 = vec4(V5, V5, V5, 1.0);
+  vec4 color5 = vec4(r, g, b, 1.0);
   vec4 color = color2*0.3 + color1*0.3 + color3*0.4;
+  color = color5*0.5 + color4*0.5;
   gl_FragColor = color;
 }
